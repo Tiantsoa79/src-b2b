@@ -1,18 +1,17 @@
 package orange.mg.model;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.JoinColumn;
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User extends PanacheEntity {
+public class User extends PanacheEntityBase {
+
+    @Id
+    @Column(name = "iduser")
+    public Long iduser;
 
     @Column(name = "trigramme")
     public String trigramme;
@@ -26,18 +25,24 @@ public class User extends PanacheEntity {
     @Column(name = "mail")
     public String mail;
 
-    @Column(name = "id_role")
-    public Integer idRole;
-
     @Column(name = "role")
     public String role;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_droits", joinColumns = @JoinColumn(name = "id_user"))
-    @Column(name = "droit")
-    public List<String> droits; // Utilisez une liste de chaînes pour stocker les droits
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "roletodroit",
+            joinColumns = @JoinColumn(name = "idrole"),
+            inverseJoinColumns = @JoinColumn(name = "iddroit"))
+    public List<DroitUser> droits;
 
     // Getters and setters
+    public Long getIduser() {
+        return iduser;
+    }
+
+    public void setIduser(Long iduser) {
+        this.iduser = iduser;
+    }
+
     public String getTrigramme() {
         return trigramme;
     }
@@ -70,27 +75,11 @@ public class User extends PanacheEntity {
         this.mail = mail;
     }
 
-    public Integer getIdRole() {
-        return idRole;
-    }
-
-    public void setIdRole(Integer idRole) {
-        this.idRole = idRole;
-    }
-
     public String getRole() {
         return role;
     }
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public List<String> getDroits() {
-        return droits;
-    }
-
-    public void setDroits(List<String> droits) {
-        this.droits = droits;
     }
 }
